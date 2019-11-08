@@ -31,12 +31,12 @@ for smile in smiles:
 X = np.array(X)
 print(X.shape)
 
-id = X.shape[0]
+id = int (X.shape[0]/200)
 idx = int (id * 0.8)
 idy = int (id * 0.9)
 X_train = X[:idx,:,:]
 X_val = X[idx:idy,:,:]
-X_test = X[idy:,:,:]
+X_test = X[idy:id,:,:]
 print(X_train.shape)
 print(X_test.shape)
   
