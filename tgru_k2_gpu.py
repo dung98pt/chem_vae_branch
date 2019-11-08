@@ -78,11 +78,10 @@ class TerminalGRU(GRU):
     # Implements professor forcing
 
     def __init__(self, units,
-                 temperature=1., rnd_seed=None, recurrent_dropout=0.0,
-                 **kwargs):
+                 temperature=1., rnd_seed=None, recurrent_dropout=0.0):
         # @param: temperature - sampling temperature
         # Annealing will be handled in the callbacks
-        super(TerminalGRU, self).__init__(units, **kwargs)
+        super(TerminalGRU, self).__init__(units)
         self.units = units
         self.temperature = temperature
         self.rnd_seed = rnd_seed
