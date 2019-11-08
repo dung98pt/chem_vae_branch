@@ -77,13 +77,13 @@ class TerminalGRU(GRU):
     # Heavily adapted from GRU in recurrent.py
     # Implements professor forcing
 
-    def __init__(self, units1,
+    def __init__(self, units,
                  temperature=1., rnd_seed=None, recurrent_dropout=0.0,
                  **kwargs):
         # @param: temperature - sampling temperature
         # Annealing will be handled in the callbacks
         super(TerminalGRU, self).__init__(units, **kwargs)
-        self.units1 = units
+        self.units = units
         self.temperature = temperature
         self.rnd_seed = rnd_seed
         self.uses_learning_phase = True
