@@ -1,3 +1,8 @@
+from keras.models import Model
+from keras import backend as K
+from keras.losses import categorical_crossentropy
+from keras import objectives
+from keras.losses import mse, binary_crossentropy
 from keras.utils import to_categorical
 import numpy as np
 import keras
@@ -46,7 +51,7 @@ from keras.layers import Dense, Conv1D, Dropout, MaxPooling1D, Flatten, Dense, B
 # Xây model 
 dropout_rate_mid = 0.082832929704794792
 def encode():
-  model_encode = Sequential()
+  model_encode = Sequential(name = "encode")
   model_encode.add(Conv1D(filters=9, kernel_size=9, activation='relu', input_shape=(120,35)))
   model_encode.add(BatchNormalization(axis = -1))
   model_encode.add(Conv1D(filters=9, kernel_size=9, activation='relu'))
@@ -57,21 +62,27 @@ def encode():
   model_encode.add(Dense(196, activation='relu'))
   model_encode.add(Dropout(dropout_rate_mid))
   model_encode.add(BatchNormalization(axis = -1))
-  # model_encode.add(Dense(196, activation='relu'))
   return model_encode
 encode = encode()
+encode.summary()
 
 def decode():
-  model_decode = Sequential()
-  model_decode.add(Dense(196, activation='relu', input_shape = ([196])))
-  model_decode.add(Dropout(dropout_rate_mid))
-  model_decode.add(BatchNormalization(axis = -1))
-  model_decode.add(RepeatVector(120))
-  model_decode.add(GRU(448,return_sequences=True, activation='tanh'))
-  model_decode.add(GRU(448,return_sequences=True, activation='tanh'))
-  model_decode.add(GRU(448,return_sequences=True, activation='tanh'))
+  input1 = Input(shape=(120,35))
+  input2 = Input(shape=([196]))  
+  x = Dense(196, activation='relu')(input2)
+  x = Dropout(dropout_rate_mid)(x)
+  x = BatchNormalization(axis = -1)(x)
+  x = RepeatVector(120)(x)
+  x = GRU(448,return_sequences=True, activation='tanh')(x)
+  x = GRU(448,return_sequences=True, activation='tanh')(x)
+  x = GRU(448,return_sequences=True, activation='tanh')(x)
+  x= TerminalGRU(35, rnd_seed=42, recurrent_dropout = 0.0,
+    return_sequences=True, activation='softmax',temperature=0.01,
+    name='decoder_tgru', implementation=0)([x, input1])
+  model_decode = Model([input1, input2], x, name = "decode")
   return model_decode
 decode = decode()
+decode.summary()
 
 # latent Z
 def sampling(args):
@@ -82,27 +93,17 @@ def sampling(args):
     epsilon = K.random_normal(shape=(batch, dim))
     return z_mean + K.exp(0.5 * z_log_var) * epsilon
 
-from keras.models import Model
-from keras import backend as K
-from keras.losses import categorical_crossentropy
-from keras import objectives
-from keras.losses import mse, binary_crossentropy
-
 def VAE():
   inputs = Input(shape=(120,35))
   x = encode(inputs)
   z_mean = Dense(196, name='z_mean')(x)
   z_log_var = Dense(196, name='z_log_var')(x)
   z = Lambda(sampling, output_shape=(196,), name='z')([z_mean, z_log_var])
-  x = decode(z)
-  x = TerminalGRU(35, rnd_seed=42, recurrent_dropout = 0.0,
-    return_sequences=True, activation='softmax',temperature=0.01,
-    name='decoder_tgru', implementation=0)([x, inputs])
-  model = Model(inputs, x)
-  
-  return model, z_mean, z_log_var
+  x = decode([inputs, z])
+  VAE = Model(inputs, x, name = "VAE")
+  return VAE, z_mean, z_log_var
 vae, z_mean, z_log_var  = VAE()
-vae.summary()
+vae.summary() 
 
 ''' Test thử 3 hàm loss'''
 def vae_loss_binary(x, x_reconstruction):
@@ -132,7 +133,7 @@ vae.fit(X_train, X_train, batch_size= 256, epochs=20, verbose=1, validation_data
 encode.save("encode.h5")
 decode.save("decode.h5")
 
-from keras.models import load_model
+# from keras.models import load_model
 # encode = load_model("./encode.h5")
 # decode = load_model("./decode.h5")
 # y = vae.predict(X_test)
