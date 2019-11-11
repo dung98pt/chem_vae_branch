@@ -1,4 +1,3 @@
-%%writefile train.py
 from keras.models import Model
 from keras import backend as K
 from keras.losses import categorical_crossentropy
@@ -12,19 +11,7 @@ from keras.callbacks import ModelCheckpoint
 from tgru_k2_gpu import TerminalGRU 
 from keras.models import Sequential
 from keras.layers import Dense, Conv1D, Dropout, MaxPooling1D, Flatten, Dense, BatchNormalization,RepeatVector,GRU,Input,Lambda
-from keras.models import Model
-from keras import backend as K
-from keras.losses import categorical_crossentropy
-from keras import objectives
-from keras.losses import mse, binary_crossentropy
-from keras.utils import to_categorical
-import numpy as np
-import keras
-from keras import optimizers
-from keras.callbacks import ModelCheckpoint
-from tgru_k2_gpu import TerminalGRU
-from keras.models import Sequential
-from keras.layers import Dense, Conv1D, Dropout, MaxPooling1D, Flatten, Dense, BatchNormalization,RepeatVector,GRU,Input,Lambda
+
 # chuyển ma trận one-hot 
 DICT = {'5': 29, '=': 22, 'N': 31, 'l': 16, 'H': 18, ']': 3, '@': 21, '6': 1, 'O': 17, 'c': 19, '2': 27, '8': 25, '3': 4, '7': 0, 'I': 15, 'C': 26, 'F': 28, '-': 7, 'P': 24, '/': 9, ')': 13, ' ': 34, '#': 14, 'r': 30, '\\': 33, '1': 20, 'n': 23, '+': 32, '[': 12, 'o': 2, 's': 5, '4': 11, 'S': 8, '(': 6, 'B': 10}
 def one_hot(str, LEN_MAX = 120):
