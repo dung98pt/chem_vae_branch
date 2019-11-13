@@ -12,6 +12,7 @@ from tgru_k2_gpu import TerminalGRU
 from keras.models import Sequential
 from keras.layers import Dense, Conv1D, Dropout, MaxPooling1D, Flatten, Dense, BatchNormalization,RepeatVector,GRU,Input,Lambda
 
+
 # chuyển ma trận one-hot 
 DICT = {'5': 29, '=': 22, 'N': 31, 'l': 16, 'H': 18, ']': 3, '@': 21, '6': 1, 'O': 17, 'c': 19, '2': 27, '8': 25, '3': 4, '7': 0, 'I': 15, 'C': 26, 'F': 28, '-': 7, 'P': 24, '/': 9, ')': 13, ' ': 34, '#': 14, 'r': 30, '\\': 33, '1': 20, 'n': 23, '+': 32, '[': 12, 'o': 2, 's': 5, '4': 11, 'S': 8, '(': 6, 'B': 10}
 def one_hot(str, LEN_MAX = 120):
@@ -30,7 +31,7 @@ link1 = '250k_rndm_zinc_drugs_clean_3.csv'
 df1 = pd.read_csv(link1, delimiter=',', names = ['smiles','1','2','3'])
 smiles = list(df1.smiles)[1:]
 X = []
-for smile in smiles:
+for smile in smiles[:1000]:
   try:
     X.append(one_hot(smile[:-1]))  
   except:
@@ -46,7 +47,6 @@ X_val = X[idx:idy,:,:]
 X_test = X[idy:id,:,:]
 print(X_train.shape)
 print(X_test.shape)
-  
 
 
 # Xây model
@@ -133,13 +133,20 @@ loss = [vae_loss_binary, vae_loss_mse, vae_loss_categorical]
 metric = ['accuracy', 'categorical_accuracy']
 
 vae.compile(loss = loss[2], optimizer= optim, metrics=[metric[0]])
-vae.fit(X_train, X_train, batch_size= 256, epochs=1, verbose=1, validation_data=(X_val, X_val))
+epochs = 1
+for epoch in epochs:
+  print((i+1), "/", epochs)
+  vae.fit(X_train, X_train, batch_size= 256, verbose=1, validation_data=(X_val, X_val))
+  if (i+1)%1 == 0:
+    vae.save_weights("vae_weight.h5")
+    encode.save_weights("encode_weight.h5")
+    decode.save_weights("decode_weight.h5")
                 
-encode.save("encode.h5")
-decode.save("decode.h5")
+
+# encode.load_weights("encode_weight.h5")
+# decode.save_weights("decode_weight.h5")
+# VAE.load_weights("vae_weight.h5")
 
 
-# encode = load_model("./encode.h5")
-# decode = load_model("./decode.h5")
 # y = vae.predict(X_test)
 # print(y[0][0])
