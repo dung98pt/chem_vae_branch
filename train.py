@@ -55,7 +55,7 @@ epochs = 10
 for epoch in range(epochs):
   print((epoch+1), "/", epochs)
   vae.fit(X_train, X_train, batch_size= 128, verbose=1, validation_data=(X_val, X_val))
-  if (i+1)%1 == 0:
+  if (epoch+1)%1 == 0:
     vae.save_weights("vae_weight_"+(epoch+1)+".h5")
     encode.save_weights("encode_weight_"+(epoch+1)+".h5")
     decode.save_weights("decode_weight_"+(epoch+1)+".h5")
