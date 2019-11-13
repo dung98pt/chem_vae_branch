@@ -52,7 +52,7 @@ metric = ['accuracy', 'categorical_accuracy']
 
 vae.compile(loss = loss[2], optimizer= optim, metrics=[metric[0]])
 epochs = 10
-for epoch in epochs:
+for epoch in range(epochs):
   print((epoch+1), "/", epochs)
   vae.fit(X_train, X_train, batch_size= 128, verbose=1, validation_data=(X_val, X_val))
   if (i+1)%1 == 0:
