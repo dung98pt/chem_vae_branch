@@ -1,3 +1,4 @@
+from keras.utils import to_categorical
 import pandas as pd
 from sklearn.model_selection import train_test_split as stt
 import numpy as np
@@ -27,12 +28,12 @@ def load_data():
 			X.append(one_hot(smile[:-1]))  
 		except:
 			pass
+
 	X = np.array(X)
 	print(X.shape)
 	X_train, X_test = stt(X, test_size=0.1, random_state=42)
 	X_train, X_val = stt(X_train, test_size=0.11, random_state=42)
 	return X_train, X_val, X_test 
-
 
 
 

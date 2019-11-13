@@ -53,12 +53,12 @@ metric = ['accuracy', 'categorical_accuracy']
 vae.compile(loss = loss[2], optimizer= optim, metrics=[metric[0]])
 epochs = 10
 for epoch in epochs:
-  print((i+1), "/", epochs)
+  print((epoch+1), "/", epochs)
   vae.fit(X_train, X_train, batch_size= 128, verbose=1, validation_data=(X_val, X_val))
   if (i+1)%1 == 0:
-    vae.save_weights("vae_weight_"+(i+1)+".h5")
-    encode.save_weights("encode_weight_"+(i+1)+".h5")
-    decode.save_weights("decode_weight_"+(i+1)+".h5")
+    vae.save_weights("vae_weight_"+(epoch+1)+".h5")
+    encode.save_weights("encode_weight_"+(epoch+1)+".h5")
+    decode.save_weights("decode_weight_"+(epoch+1)+".h5")
                 
 
 # encode.load_weights("encode_weight.h5")
